@@ -1,4 +1,4 @@
-function Main() {
+function Hero() {
   const explorarCatalogo = () => {
     document.getElementById("catalogo")?.scrollIntoView({
       behavior: "smooth",
@@ -37,4 +37,4 @@ function Main() {
   );
 }
 
-export default Main;
+export default Hero;

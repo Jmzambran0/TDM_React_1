@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 import Header from "./components/Header";
-import Main from "./components/MainSection";
+import Hero from "./components/Hero";
 import Catalog from "./components/CatalogSection";
 import Favorites from "./components/FavoritesSection";
 import Footer from "./components/Footer";
@@ -10,10 +10,38 @@ import { games } from "./data/games";
 import "./App.css";
 
 const STORAGE_KEY = "gamehub-favorites";
+const DARK_MODE_KEY = "gamehub-dark-mode";
 
 function App() {
   const [favorites, setFavorites] = useState([]);
   const [favoritesLoaded, setFavoritesLoaded] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => {
+    try {
+      const saved = localStorage.getItem(DARK_MODE_KEY);
+
+      if (saved === null) return true;
+
+      const savedTheme = JSON.parse(saved);
+
+      if (typeof savedTheme === "boolean") return savedTheme;
+
+      console.error("La preferencia de tema guardada no es válida.");
+    } catch (error) {
+      console.error("No se pudo cargar el modo oscuro:", error);
+    }
+
+    return true;
+  });
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = darkMode ? "dark" : "light";
+
+    try {
+      localStorage.setItem(DARK_MODE_KEY, JSON.stringify(darkMode));
+    } catch (error) {
+      console.error("No se pudo guardar el modo oscuro:", error);
+    }
+  }, [darkMode]);
 
   useEffect(() => {
     try {
@@ -68,10 +96,14 @@ function App() {
 
   return (
     <>
-      <Header cantidadFavoritos={favorites.length} />
+      <Header
+        favoritesAmount={favorites.length}
+        darkMode={darkMode}
+        onToggleTheme={() => setDarkMode((currentMode) => !currentMode)}
+      />
 
       <main className="container">
-        <Main />
+        <Hero />
 
         <Catalog
           games={games}
